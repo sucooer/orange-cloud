@@ -22,7 +22,7 @@
 		"title1": "Your Cloudflare,",
 		"title2": "at a glance",
 		"sub": "Domains, DNS, analytics, Workers logs and storage, set in a sky that follows the time of day. Official OAuth sign-in — no API token pasting.",
-		"note": "iOS 26.0+ · Free download, optional Pro"
+		"note": "iOS 18.0+ · Free download, optional Pro"
 	},
 	"phone": {
 		"greetMorning": "Good morning, Jiamin",
@@ -113,14 +113,21 @@
 	"cta": {
 		"title": "Put Cloudflare in your pocket",
 		"sub": "Tonight's sky is already waiting in the app.",
-		"requirement": "Requires iOS 26.0 or later · iPhone and iPad"
+		"requirement": "Requires iOS 18.0 or later · iPhone and iPad"
 	},
 	"changelog": {
 		"title": "Beta Releases",
 		"sub": "The App Store version is under review. Join TestFlight to try the latest build now.",
 		"tfButton": "Join TestFlight",
-		"tfNote": "Requires iOS 26.0 or later · Apple devices only",
+		"tfNote": "Requires iOS 18.0 or later · Apple devices only",
 		"entries": [
+			{
+				"version": "1.0 (4)",
+				"date": "2026.06.15",
+				"notes": [
+					"Minimum requirement lowered to iOS 18.0 — runs on far more iPhone and iPad"
+				]
+			},
 			{
 				"version": "1.0 (3)",
 				"date": "2026.06.12",

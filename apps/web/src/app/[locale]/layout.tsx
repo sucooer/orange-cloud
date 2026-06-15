@@ -4,6 +4,8 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
+import Head from "next/head";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const SITE_URL = "https://orange-cloud.chatiro.app";
 
@@ -92,7 +94,7 @@ export default async function LocaleLayout({
 		"@context": "https://schema.org",
 		"@type": "SoftwareApplication",
 		name: "Orange Cloud",
-		operatingSystem: "iOS 26.0 or later",
+		operatingSystem: "iOS 18.0 or later",
 		applicationCategory: "DeveloperApplication",
 		description: t("description"),
 		url: SITE_URL,
@@ -108,6 +110,10 @@ export default async function LocaleLayout({
 
 	return (
 		<html lang={locale}>
+			<Head>
+				<meta name="msvalidate.01" content="D37E43E607B99CBD72EB0FAFBB58FF89" />
+			</Head>
+			<GoogleAnalytics gaId="G-JLDKXFVLR0" />
 			<body className="antialiased">
 				<script
 					type="application/ld+json"
