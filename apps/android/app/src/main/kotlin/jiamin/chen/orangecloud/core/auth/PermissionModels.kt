@@ -38,7 +38,7 @@ object PermissionCatalog {
         PermissionFeature("email_routing", R.string.perm_email_routing, R.string.perm_email_routing_desc, listOf(Scopes.EMAIL_ADDR_READ, Scopes.EMAIL_RULE_READ), listOf(Scopes.EMAIL_ADDR_WRITE, Scopes.EMAIL_RULE_WRITE)),
         PermissionFeature("bulk_redirects", R.string.perm_bulk_redirects, R.string.perm_bulk_redirects_desc, listOf(Scopes.REDIRECTS_READ, Scopes.RULE_LISTS_READ), listOf(Scopes.REDIRECTS_WRITE, Scopes.RULE_LISTS_WRITE)),
         PermissionFeature("load_balancer", R.string.perm_load_balancer, R.string.perm_load_balancer_desc, listOf(Scopes.LB_READ, Scopes.LB_POOLS_READ), listOf(Scopes.LB_WRITE, Scopes.LB_POOLS_WRITE)),
-        PermissionFeature("zero_trust", R.string.perm_zero_trust, R.string.perm_zero_trust_desc, listOf(Scopes.ACCESS_READ, Scopes.TEAMS_READ), listOf(Scopes.ACCESS_WRITE, Scopes.TEAMS_WRITE)),
+        PermissionFeature("zero_trust", R.string.perm_zero_trust, R.string.perm_zero_trust_desc, listOf(Scopes.ACCESS_READ, Scopes.TEAMS_READ), listOf(Scopes.ACCESS_WRITE)),
         PermissionFeature("pages", R.string.perm_pages, R.string.perm_pages_desc, listOf(Scopes.PAGES_READ), listOf(Scopes.PAGES_WRITE)),
         PermissionFeature("workers_ai", R.string.perm_workers_ai, R.string.perm_workers_ai_desc, listOf(Scopes.AI_READ), listOf(Scopes.AI_WRITE)),
         PermissionFeature("ai_gateway", R.string.perm_ai_gateway, R.string.perm_ai_gateway_desc, listOf(Scopes.AIG_READ), listOf(Scopes.AIG_WRITE)),
