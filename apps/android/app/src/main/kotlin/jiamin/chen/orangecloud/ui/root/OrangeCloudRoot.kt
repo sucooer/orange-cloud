@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
@@ -342,7 +343,7 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
                         }
                     },
                     icon = { Icon(dest.icon, contentDescription = null) },
-                    label = { Text(stringResource(dest.labelRes)) },
+                    label = { Text(stringResource(dest.labelRes), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 )
             }
         },
