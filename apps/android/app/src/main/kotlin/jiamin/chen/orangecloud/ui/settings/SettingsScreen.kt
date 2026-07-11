@@ -277,7 +277,7 @@ fun SettingsScreen(
                         .onFailure { openUrl("https://play.google.com/store/apps/details?id=jiamin.chen.orangecloud") }
                 }
                 RowDivider(indent = true)
-                LinkRow(Icons.Outlined.Code, cs.onSurfaceVariant, stringResource(R.string.settings_github)) { openUrl("https://github.com/chen2he/orange-cloud") }
+                LinkRow(Icons.Outlined.Code, cs.onSurfaceVariant, stringResource(R.string.settings_github)) { openUrl("https://github.com/sucooer/orange-cloud") }
                 RowDivider(indent = true)
                 LinkRow(Icons.Outlined.PrivacyTip, cs.onSurfaceVariant, stringResource(R.string.settings_privacy)) { openUrl("https://o-c.do/privacy") }
                 RowDivider(indent = true)
