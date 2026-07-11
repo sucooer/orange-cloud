@@ -1,9 +1,9 @@
 # 版本目录。版本号为 2026-06 最佳估计；本机未装工具链，首次 `gradle sync`
 # 可能需要按报错微调（尤其 AGP/Kotlin/Compose BOM 三者的兼容矩阵）。
 [versions]
-agp = "8.13.2"
-kotlin = "2.1.20"
-ksp = "2.1.20-2.0.0"
+agp = "9.2.1"
+kotlin = "2.2.10"
+ksp = "2.3.2"
 hilt = "2.56.2"
 hiltNavigation = "1.2.0"
 
