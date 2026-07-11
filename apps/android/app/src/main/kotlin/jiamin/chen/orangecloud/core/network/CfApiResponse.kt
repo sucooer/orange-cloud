@@ -34,7 +34,7 @@ data class ResultInfo(
     val cursor: String? = null,
     @SerialName("is_truncated") val isTruncated: Boolean? = null,
     // R2 带 delimiter 列举时的「文件夹」前缀
-    @SerialName("delimited_prefixes") val delimitedPrefixes: List<String>? = null,
+    @SerialName("delimited") val delimitedPrefixes: List<String>? = null,
 )
 
 /** 列表端点的解码结果：数据 + 分页信息 */
