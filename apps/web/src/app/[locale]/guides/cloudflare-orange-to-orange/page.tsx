@@ -32,13 +32,18 @@ const FAQ: Array<{ q: string; a: string }> = [
 const RELATED: RelatedLink[] = [
 	{
 		href: "/guides/what-is-the-orange-cloud-in-cloudflare",
-		label: "What does the orange cloud mean in Cloudflare?",
+		label: "What is the orange cloud in Cloudflare?",
 		note: "The prerequisite: proxied vs DNS only, which records qualify, and which ports the proxy covers.",
 	},
 	{
 		href: "/guides/cloudflare-ssl-tls-encryption-modes",
 		label: "Which Cloudflare SSL/TLS encryption mode should you use?",
 		note: "Flexible, Full, Full (strict): what each does to the origin connection, and which error each one produces.",
+	},
+	{
+		href: "/guides/cloudflare-error-1000-dns-points-to-prohibited-ip",
+		label: "Cloudflare error 1000: DNS points to prohibited IP",
+		note: "The failure mode when a SaaS platform on Cloudflare has not onboarded your hostname yet.",
 	},
 	{
 		href: DOCS_O2O,

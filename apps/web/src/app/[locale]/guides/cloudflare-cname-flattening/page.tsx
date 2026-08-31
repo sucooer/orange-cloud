@@ -53,8 +53,13 @@ const FAQ: Array<{ q: string; a: string }> = [
 
 const RELATED: RelatedLink[] = [
 	{
+		href: "/guides/cloudflare-error-1000-dns-points-to-prohibited-ip",
+		label: "Cloudflare error 1000: DNS points to prohibited IP",
+		note: "Where a flattened record quietly resolves to Cloudflare instead of your origin.",
+	},
+	{
 		href: "/guides/what-is-the-orange-cloud-in-cloudflare",
-		label: "What does the orange cloud mean in Cloudflare?",
+		label: "Orange cloud vs grey cloud: proxied vs DNS only",
 		note: "Every proxied record is flattened by definition — this is what the proxy returns instead of your origin.",
 	},
 	{

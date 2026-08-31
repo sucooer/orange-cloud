@@ -52,6 +52,11 @@ const FAQ: Array<{ q: string; a: string }> = [
 
 const RELATED: RelatedLink[] = [
 	{
+		href: "/guides/cloudflare-cname-zhanping",
+		label: "Cloudflare 的 CNAME 展平（拉平）到底做了什么？",
+		note: "代理开关也决定了展平后返回什么：开着返回任播 IP，关着返回展平出来的真实 IP。",
+	},
+	{
 		href: "/guides/cloudflare-ssl-jiami-moshi",
 		label: "Cloudflare 的 SSL/TLS 加密模式该选哪一个？",
 		note: "小黄云一开，证书就在 Cloudflare 那一层终止了。回源那一段加不加密、验不验证，由加密模式决定。",
@@ -70,6 +75,16 @@ const RELATED: RelatedLink[] = [
 		href: "/guides/cloudflare-522-error",
 		label: "Cloudflare 为什么会报 522 错误？",
 		note: "开了小黄云才会遇到的报错：边缘节点连不上源站，19 秒之后返回 522。",
+	},
+	{
+		href: "/guides/cloudflare-dns-jiexi-bu-shengxiao",
+		label: "改了 DNS 解析，为什么一直不生效？",
+		note: "开着小黄云改源站 IP，dig 出来的结果一个字都不会变——这不是没生效，是它本来就不返回源站地址。",
+	},
+	{
+		href: "/guides/cloudflare-huancun-mingzhonglv",
+		label: "Cloudflare 到底缓存了什么？为什么命中率一直上不去",
+		note: "缓存和缓存规则只对代理流量生效——灰云记录的请求根本不经过 Cloudflare。",
 	},
 	{
 		href: DOCS_PROXY,
