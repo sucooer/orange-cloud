@@ -70,13 +70,13 @@ export const GUIDES: GuideMeta[] = [
 	},
 	{
 		slug: "why-is-cloudflare-not-caching-my-site",
-		h1: "Why Is Cloudflare Not Caching My Site?",
-		title: "Why Isn't Cloudflare Caching My Site? cf-cache-status",
+		h1: "What Does cf-cache-status DYNAMIC, BYPASS, or MISS Mean?",
+		title: "Cloudflare cf-cache-status: DYNAMIC vs BYPASS vs MISS",
 		description:
-			"Cloudflare does not cache HTML or JSON by default. DYNAMIC means the request was never eligible; BYPASS means the origin response blocked caching.",
+			"cf-cache-status names the cache decision: DYNAMIC was never eligible, BYPASS was blocked by the origin response, MISS was cacheable but not stored yet.",
 		blurb:
-			"DYNAMIC, BYPASS and a MISS that never becomes a HIT are three different failures with three different fixes — read the header first.",
-		updated: "2026-08-20",
+			"One header names the decision Cloudflare made. DYNAMIC, BYPASS and a MISS that never becomes a HIT are three different failures with three different fixes.",
+		updated: "2026-09-04",
 		readingTime: "8 min read",
 	},
 	{
@@ -155,6 +155,17 @@ export const GUIDES: GuideMeta[] = [
 			"A refusal, not a timeout — which is why it appears instantly. The four causes, and the one that starts the moment you change an encryption mode.",
 		updated: "2026-09-01",
 		readingTime: "7 min read",
+	},
+	{
+		slug: "cloudflare-error-526-invalid-ssl-certificate",
+		h1: "Why Am I Getting Cloudflare Error 526: Invalid SSL Certificate?",
+		title: "Cloudflare Error 526: Invalid SSL Certificate, Explained",
+		description:
+			"Error 526 means Cloudflare could not validate your origin\u2019s certificate while the encryption mode is Full (strict). Both conditions must be true.",
+		blurb:
+			"Two conditions have to hold at once \u2014 which is why 526 differs from 525, and why a site nobody touched starts failing the day an origin certificate quietly expires.",
+		updated: "2026-09-03",
+		readingTime: "8 min read",
 	},
 ];
 
