@@ -22,13 +22,6 @@ jobs:
           distribution: 'zulu'  # Zulu 是 Azul 提供的 OpenJDK，GitHub Actions 支持
           cache: gradle
 
-      - name: 📱 Setup Android SDK
-        # v3 默认安装已废弃的 `tools` 包，Google 已于 2026-09 从 SDK 仓库移除该包导致失败
-        # v4.0.2+ 修复：默认改为安装 `cmdline-tools platform-tools`
-        uses: android-actions/setup-android@v4
-        with:
-          packages: 'cmdline-tools platform-tools'
-
       - name: 🔑 Grant execute permission for gradlew
         run: chmod +x apps/android/gradlew
 
