@@ -47,14 +47,15 @@ jobs:
         run: |
           cd apps/android
           # .jks 写入 app/ 目录；keystore.properties 写入 rootProject（apps/android/）
-          # signingConfigs 中 file() 相对于 app 模块解析，所以 storeFile 只需 "release.jks"
+          # 注意：build.gradle.kts 已改用 expandHome() 解析 storeFile，相对路径会按
+          # Gradle 守护进程的工作目录解析（而非 app 模块目录），因此必须写绝对路径
           echo "$KEYSTORE_BASE64" | base64 -d > app/release.jks
           # 用 GitHub mask 机制保护密码：写入文件后立即 unset，避免出现在日志/stacktrace 中
           STORE_PW="${{ secrets.KEYSTORE_PASSWORD }}"
           KEY_PW="${{ secrets.KEY_PASSWORD }}"
           echo "::add-mask::$STORE_PW"
           echo "::add-mask::$KEY_PW"
-          printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=release\nkeyPassword=%s\n' "$STORE_PW" "$KEY_PW" > keystore.properties
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=release\nkeyPassword=%s\n' "$(pwd)/app/release.jks" "$STORE_PW" "$KEY_PW" > keystore.properties
           unset STORE_PW KEY_PW
 
       - name: 🔨 Build OSS Release APK
