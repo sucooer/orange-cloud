@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build Android OSS Release APK
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # 固定版本，避免 ubuntu-latest 2026-10 迁移到 Ubuntu 26 时的不确定性
     
     steps:
       - name: 📥 Checkout code
@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'  # Zulu 是 Azul 提供的 OpenJDK，GitHub Actions 支持
-          cache: gradle
+          # 不在这里开 cache: gradle —— 与下方 setup-gradle 的缓存重复，双份缓存反而拖慢保存/恢复
 
       - name: 🔑 Grant execute permission for gradlew
         run: chmod +x apps/android/gradlew
@@ -38,6 +38,11 @@ jobs:
           echo "OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}" >> local.properties
           # 禁用 Gradle toolchain 自动下载，使用系统提供的 JDK
           echo "org.gradle.java.installations.auto-download=false" >> gradle.properties
+          # CI 日志降噪（仅追加到 CI，不改上游仓库文件）：
+          # 1) 开启 AGP 推荐的库组件约束排除，消除重复的 LIBRARY_CONSTRAINTS 性能警告
+          echo "android.dependency.excludeLibraryComponentsFromConstraints=true" >> gradle.properties
+          # 2) 抑制上游 gradle.properties 里 legacy 开关（newDsl/builtInKotlin 等）的 AGP 弃用警告
+          echo "android.sync.suppressAgpWarnings=UNSUPPORTED_PROJECT_OPTION_USE" >> gradle.properties
           # 临时删除 JetBrains JDK 要求，使用系统提供的 JDK 21
           rm -f gradle/gradle-daemon-jvm.properties
 
