@@ -1,8 +1,10 @@
 import java.io.File
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -66,8 +68,8 @@ android {
         // 实况通知促升(API36) 均 if-guard 渐进增强，Android 8–11 落固定品牌调色板与常驻通知回退。
         minSdk = 26
         targetSdk = 36
-        versionCode = 27
-        versionName = "2.1.3"
+        versionCode = 28
+        versionName = "2.1.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // OAuth 回调（Web 后端 302 跳回的自定义 scheme）
@@ -177,8 +179,11 @@ android {
     }
 }
 
-// AGP 9 内置 Kotlin 编译（不再 apply org.jetbrains.kotlin.android）：
-// jvmTarget 默认取 android.compileOptions.targetCompatibility（此处 17），无需再显式声明。
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
