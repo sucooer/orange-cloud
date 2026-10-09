@@ -38,6 +38,7 @@ import jiamin.chen.orangecloud.core.util.launchCustomTab
 import jiamin.chen.orangecloud.ui.dnssettings.DnsSettingsScreen
 import jiamin.chen.orangecloud.ui.managedheaders.ManagedHeadersScreen
 import jiamin.chen.orangecloud.ui.registrar.RegistrarScreen
+import jiamin.chen.orangecloud.ui.registrar.RegistrarSearchScreen
 import jiamin.chen.orangecloud.ui.builds.WorkerBuildsScreen
 import jiamin.chen.orangecloud.ui.tracer.RequestTracerScreen
 import jiamin.chen.orangecloud.ui.urlscanner.URLScannerScreen
@@ -100,6 +101,7 @@ import jiamin.chen.orangecloud.ui.alerting.CFAlertingScreen
 import jiamin.chen.orangecloud.ui.redirects.RedirectListsScreen
 import jiamin.chen.orangecloud.ui.redirects.RedirectItemsScreen
 import jiamin.chen.orangecloud.ui.firewall.ZoneAccessRulesScreen
+import jiamin.chen.orangecloud.ui.securityinsights.SecurityInsightsScreen
 import jiamin.chen.orangecloud.ui.transform.ZoneTransformScreen
 import jiamin.chen.orangecloud.ui.zonesettings.ZonePerformanceScreen
 import jiamin.chen.orangecloud.ui.zonesettings.ZoneSettingsScreen
@@ -120,6 +122,8 @@ import jiamin.chen.orangecloud.ui.storage.StorageHubScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerCreateScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerDeploymentsScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerDetailScreen
+import jiamin.chen.orangecloud.ui.workers.WorkerIssueDetailScreen
+import jiamin.chen.orangecloud.ui.workers.WorkerIssuesScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerListScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerRoutesScreen
 import jiamin.chen.orangecloud.ui.workers.WorkerSecretsScreen
@@ -196,6 +200,7 @@ private object Dest {
     const val TUNNELS = "tunnels"
     const val TURNSTILE = "turnstile"
     const val REGISTRAR = "registrar"
+    const val REGISTRAR_SEARCH = "registrar/search"
     const val TRACER = "tracer"
     const val URL_SCANNER = "urlscanner"
     const val TUNNEL_DETAIL_ROUTE = "tunnel/{tunnelId}?tunnelName={tunnelName}"
@@ -214,8 +219,9 @@ private object Dest {
     const val WAF_ROUTE = "waf/{zoneId}?zoneName={zoneName}"
     // 存储下钻
     const val R2_BUCKETS = "r2/buckets"
-    const val R2_OBJECTS_ROUTE = "r2/objects/{bucket}"
-    const val R2_BUCKET_SETTINGS_ROUTE = "r2/settings/{bucket}"
+    // jurisdiction：区域限制桶（eu / us / fedramp…）的桶级调用都要带 cf-r2-jurisdiction 头，经路由透传；默认区域为空
+    const val R2_OBJECTS_ROUTE = "r2/objects/{bucket}?jurisdiction={jurisdiction}"
+    const val R2_BUCKET_SETTINGS_ROUTE = "r2/settings/{bucket}?jurisdiction={jurisdiction}"
     const val R2_SQL_ROUTE = "r2/sql/{bucket}"
     const val D1_DATABASES = "d1/databases"
     const val D1_QUERY_ROUTE = "d1/query/{dbId}?dbName={dbName}"
@@ -240,6 +246,7 @@ private object Dest {
     const val HEALTHCHECK_ROUTE = "healthcheck/{zoneId}?zoneName={zoneName}"
     const val DNS_SETTINGS_ROUTE = "dnssettings/{zoneId}?zoneName={zoneName}"
     const val MANAGED_HEADERS_ROUTE = "managedheaders/{zoneId}?zoneName={zoneName}"
+    const val SECURITY_INSIGHTS_ROUTE = "securityinsights/{zoneId}?zoneName={zoneName}"
     const val LB_POOLS = "lb/pools"
     const val LB_MONITORS = "lb/monitors"
     const val WORKER_ROUTE = "worker/{scriptName}"
@@ -250,6 +257,9 @@ private object Dest {
     const val WORKER_DEPLOYMENTS_ROUTE = "worker/{scriptName}/deployments"
     const val WORKER_BUILDS_ROUTE = "worker/{scriptName}/builds"
     const val TAIL_ROUTE = "tail/{scriptName}"
+    // Workers Issues：全账户列表（service 为空）或限定单个 Worker；详情按 issueId
+    const val WORKER_ISSUES_ROUTE = "workers/issues?service={service}"
+    const val WORKER_ISSUE_ROUTE = "workers/issue/{issueId}"
     private fun zoneScoped(prefix: String, zoneId: String, zoneName: String) =
         "$prefix/$zoneId?zoneName=${Uri.encode(zoneName)}"
     fun zoneDetail(zoneId: String, zoneName: String) = zoneScoped("zone", zoneId, zoneName)
@@ -270,6 +280,7 @@ private object Dest {
     fun healthCheck(zoneId: String, zoneName: String) = zoneScoped("healthcheck", zoneId, zoneName)
     fun dnsSettings(zoneId: String, zoneName: String) = zoneScoped("dnssettings", zoneId, zoneName)
     fun managedHeaders(zoneId: String, zoneName: String) = zoneScoped("managedheaders", zoneId, zoneName)
+    fun securityInsights(zoneId: String, zoneName: String) = zoneScoped("securityinsights", zoneId, zoneName)
     fun snippetEdit(zoneId: String, zoneName: String, name: String) =
         "snippetEdit/$zoneId?zoneName=${Uri.encode(zoneName)}&name=${Uri.encode(name)}"
     fun redirectItems(listId: String, listName: String): String = "redirects/$listId?listName=${Uri.encode(listName)}"
@@ -287,8 +298,15 @@ private object Dest {
     fun workerDeployments(scriptName: String): String = "worker/${Uri.encode(scriptName)}/deployments"
     fun workerBuilds(scriptName: String): String = "worker/${Uri.encode(scriptName)}/builds"
     fun tail(scriptName: String): String = "tail/${Uri.encode(scriptName)}"
-    fun r2Objects(bucket: String): String = "r2/objects/${Uri.encode(bucket)}"
-    fun r2Settings(bucket: String): String = "r2/settings/${Uri.encode(bucket)}"
+    fun workerIssues(service: String? = null): String =
+        if (service.isNullOrBlank()) "workers/issues" else "workers/issues?service=${Uri.encode(service)}"
+    fun workerIssue(issueId: String): String = "workers/issue/${Uri.encode(issueId)}"
+    private fun jurisdictionQuery(jurisdiction: String?): String =
+        jurisdiction?.takeIf { it.isNotBlank() }?.let { "?jurisdiction=${Uri.encode(it)}" }.orEmpty()
+    fun r2Objects(bucket: String, jurisdiction: String? = null): String =
+        "r2/objects/${Uri.encode(bucket)}${jurisdictionQuery(jurisdiction)}"
+    fun r2Settings(bucket: String, jurisdiction: String? = null): String =
+        "r2/settings/${Uri.encode(bucket)}${jurisdictionQuery(jurisdiction)}"
     fun r2Sql(bucket: String): String = "r2/sql/${Uri.encode(bucket)}"
     fun d1Query(dbId: String, dbName: String): String = "d1/query/$dbId?dbName=${Uri.encode(dbName)}"
     fun d1Table(dbId: String, table: String): String = "d1/table/$dbId?table=${Uri.encode(table)}"
@@ -317,6 +335,12 @@ private object Dest {
         TopDestination.Settings -> SETTINGS
     }
 }
+
+/** R2 桶级页面的导航参数：bucket 必填 + 可选 jurisdiction（默认区域为空串）。 */
+private fun r2BucketArgs() = listOf(
+    navArgument("bucket") { type = NavType.StringType },
+    navArgument("jurisdiction") { type = NavType.StringType; defaultValue = "" },
+)
 
 /** zone 级页面的共享导航参数（zoneId 必填 + 可选 zoneName）。 */
 private fun zoneArgs() = listOf(
@@ -361,6 +385,7 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
             ZoneTool.HEALTH_CHECK -> Dest.healthCheck(zoneId, zoneName)
             ZoneTool.DNS_SETTINGS -> Dest.dnsSettings(zoneId, zoneName)
             ZoneTool.MANAGED_HEADERS -> Dest.managedHeaders(zoneId, zoneName)
+            ZoneTool.SECURITY_INSIGHTS -> Dest.securityInsights(zoneId, zoneName)
         }
         route?.let { navController.navigate(it) }
     }
@@ -371,7 +396,8 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
         val route = when (type) {
             DashboardResourceType.ZONE -> Dest.zoneDetail(id, title)
             DashboardResourceType.WORKER -> Dest.worker(id)
-            DashboardResourceType.R2_BUCKET -> Dest.r2Objects(id)
+            // 区域限制桶的 id 是 name@jurisdiction（见 DashboardViewModel），拆开透传
+            DashboardResourceType.R2_BUCKET -> Dest.r2Objects(id.substringBefore('@'), id.substringAfter('@', "").ifEmpty { null })
             DashboardResourceType.D1_DATABASE -> Dest.d1Query(id, title)
             DashboardResourceType.KV_NAMESPACE -> Dest.kvKeys(id, title)
             DashboardResourceType.TUNNEL -> Dest.tunnelDetail(id, title)
@@ -479,7 +505,14 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
                 RequestTracerScreen(onBack = { navController.popBackStack() })
             }
             composable(Dest.REGISTRAR) {
-                RegistrarScreen(onBack = { navController.popBackStack() })
+                RegistrarScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenSearch = { navController.navigate(Dest.REGISTRAR_SEARCH) },
+                )
+            }
+            // 搜索新域名：与注册商页同门槛（免费），只查询不购买
+            composable(Dest.REGISTRAR_SEARCH) {
+                RegistrarSearchScreen(onBack = { navController.popBackStack() })
             }
             composable(Dest.TUNNELS) {
                 ProGate {
@@ -594,6 +627,13 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
                 arguments = zoneArgs(),
             ) {
                 ManagedHeadersScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = Dest.SECURITY_INSIGHTS_ROUTE,
+                arguments = zoneArgs(),
+            ) {
+                // 安全洞察全套餐可用、只读为主，不设 Pro 闸门
+                SecurityInsightsScreen(onBack = { navController.popBackStack() })
             }
             composable(
                 route = Dest.LOAD_BALANCER_ROUTE,
@@ -718,6 +758,7 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
                 WorkerListScreen(
                     onWorkerClick = { name -> navController.navigate(Dest.worker(name)) },
                     onCreate = { navController.navigate(Dest.WORKER_CREATE) },
+                    onOpenIssues = { navController.navigate(Dest.workerIssues()) },
                 )
             }
             composable(Dest.WORKER_CREATE) {
@@ -787,6 +828,7 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
                     onOpenDomains = { navController.navigate(Dest.workerDomains(scriptName)) },
                     onOpenDeployments = { navController.navigate(Dest.workerDeployments(scriptName)) },
                     onOpenBuilds = { navController.navigate(Dest.workerBuilds(scriptName)) },
+                    onOpenIssues = { navController.navigate(Dest.workerIssues(scriptName)) },
                     onEditCode = { navController.navigate(Dest.workerEdit(scriptName)) },
                     // 查看详情免费；删除按 isPro 拦到付费墙（编辑/新建走各自路由的 ProGate）
                     isPro = isPro,
@@ -829,6 +871,24 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
             ) {
                 ProGate { WorkerTailScreen(onBack = { navController.popBackStack() }) }
             }
+            // Workers Issues 与实时日志同属 Worker 可观测性，沿用同一个 Pro 闸门
+            composable(
+                route = Dest.WORKER_ISSUES_ROUTE,
+                arguments = listOf(navArgument("service") { type = NavType.StringType; defaultValue = "" }),
+            ) {
+                ProGate {
+                    WorkerIssuesScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenIssue = { id -> navController.navigate(Dest.workerIssue(id)) },
+                    )
+                }
+            }
+            composable(
+                route = Dest.WORKER_ISSUE_ROUTE,
+                arguments = listOf(navArgument("issueId") { type = NavType.StringType }),
+            ) {
+                ProGate { WorkerIssueDetailScreen(onBack = { navController.popBackStack() }) }
+            }
             composable(
                 Dest.STORAGE,
                 deepLinks = listOf(navDeepLink { uriPattern = "orangecloud://open/storage" }),
@@ -844,22 +904,23 @@ private fun MainScaffold(onOpenToolbox: () -> Unit) {
             composable(Dest.R2_BUCKETS) {
                 R2BucketListScreen(
                     onBack = { navController.popBackStack() },
-                    onOpenBucket = { navController.navigate(Dest.r2Objects(it)) },
+                    onOpenBucket = { name, jurisdiction -> navController.navigate(Dest.r2Objects(name, jurisdiction)) },
                 )
             }
             composable(
                 route = Dest.R2_OBJECTS_ROUTE,
-                arguments = listOf(navArgument("bucket") { type = NavType.StringType }),
+                arguments = r2BucketArgs(),
             ) { entry ->
                 val bucket = entry.arguments?.getString("bucket").orEmpty()
+                val jurisdiction = entry.arguments?.getString("jurisdiction")
                 R2ObjectListScreen(
                     onBack = { navController.popBackStack() },
-                    onOpenSettings = { navController.navigate(Dest.r2Settings(bucket)) },
+                    onOpenSettings = { navController.navigate(Dest.r2Settings(bucket, jurisdiction)) },
                 )
             }
             composable(
                 route = Dest.R2_BUCKET_SETTINGS_ROUTE,
-                arguments = listOf(navArgument("bucket") { type = NavType.StringType }),
+                arguments = r2BucketArgs(),
             ) {
                 R2BucketSettingsScreen(
                     onBack = { navController.popBackStack() },
